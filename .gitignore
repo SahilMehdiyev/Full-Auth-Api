@@ -133,13 +133,15 @@ celerybeat.pid
 
 # Environments #Eklendi 
 .env.local  
-.myenv
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Custom environment file
+myenv
 
 # Spyder project settings
 .spyderproject
