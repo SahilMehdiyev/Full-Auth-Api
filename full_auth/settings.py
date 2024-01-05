@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'rest_framework', # Eklendi!
     'djoser',#Eklendi!
     'users', #Eklendi!
+    'storages', #Eklendi!
     'django_ses', # Eklendi
     'social_django', # Eklendi
 ]
@@ -105,7 +106,7 @@ WSGI_APPLICATION = 'full_auth.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-if DEVELOPMENT_MODE is True:
+if DEVELOPMENT_MODE is True: #Eklendi! 
 
     DATABASES = {
         'default': {
@@ -113,7 +114,7 @@ if DEVELOPMENT_MODE is True:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':#Eklendi!
     if getenv('DATABASE_URL', None) is None:
         raise Exception('DATABASE_URL environment variable not defined')
     DATABASES = {
@@ -172,10 +173,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/' # Eklendi
-STATIC_ROOT = BASE_DIR / 'static' # Eklendi
-MEDIA_URL = 'media/' # Eklendi 
-MEDIA_ROOT = BASE_DIR / 'media' # Eklendi
+if DEVELOPMENT_MODE is True: #Eklendi!
+
+    STATIC_URL = 'static/' # Eklendi
+    STATIC_ROOT = BASE_DIR / 'static' # Eklendi
+    MEDIA_URL = 'media/' # Eklendi 
+    MEDIA_ROOT = BASE_DIR / 'media' # Eklendi
+
+     # Django storages  Amazon S3 gibi bulut depolama sistemlerine tasiyor
+
+else:
+    AWS_S3_ACCESS_KEY_ID = getenv('AWS_S3_ACCESS_KEY_ID')
+    AWS_S3_SECRET_ACCESS_KEY = getenv('AWS_S3_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = getenv('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = getenv('AWS_S3_REGION_NAME')
+    AWS_S3_ENDPOINT_URL = f'https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400'
+    }
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_LOCATION = 'static'
+    AWS_MEDIA_LOCATION = 'media'
+    AWS_S3_CUSTOM_DOMAIN = getenv('AWS_S3_CUSTOM_DOMAIN')
+    STORAGES = {
+        'default': {'BACKEND': 'custom_storages.CustomS3Boto3Storage'},
+        'staticfiles': {'BACKEND': 'storages.backends.s3boto3.S3StaticStorage'}
+    }
+
+
 
 
 
