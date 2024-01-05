@@ -134,6 +134,7 @@ celerybeat.pid
 # Environments #Eklendi 
 .env.local  
 .env
+.myenv
 .venv
 env/
 venv/
